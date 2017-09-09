@@ -15,7 +15,7 @@ app.get('*', (req, res) => {
     if (fs.existsSync(file)) {
         res.sendfile(file);
     } else {
-        res.send("File not found!");
+        res.send(file + " not found on the server!");
     }
 });
 
