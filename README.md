@@ -10,8 +10,8 @@ After joining
 
 **Rank - 49823 Out Of 63537**
 
-After solving till cities
+Now
 
-![Rank](https://img.shields.io/badge/Rank-10516%20out%20of%2063537-brightgreen.svg "And Working")
+![Rank](https://img.shields.io/badge/Rank-7279%20out%20of%2063537-brightgreen.svg "And Working")
 
-![Number of puzzles solved](https://img.shields.io/badge/Puzzles%20Solved-39-orange.svg "And Working")
+![Number of puzzles solved](https://img.shields.io/badge/Puzzles%20Solved-44-orange.svg "And Working")
