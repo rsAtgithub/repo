@@ -33,6 +33,7 @@ public class ForegroundService extends Service {
                 .setSmallIcon(R.drawable.ic_schedule)
                 .setColor(Color.rgb(255, 255, 31))
                 .setContentIntent(pendingIntent)
+                .setNotificationSilent()
                 .build();
         startForeground(1, notification);
         //do heavy work on a background thread
@@ -52,7 +53,7 @@ public class ForegroundService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
-                    "Foreground Service Channel",
+                    "Missed call monitor",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
