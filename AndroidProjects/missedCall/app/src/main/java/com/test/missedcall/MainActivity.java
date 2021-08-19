@@ -5,6 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CallLog;
@@ -22,44 +27,43 @@ import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int timeToRevert = 10000;
+    public static int timeToRevert = 30000;
     public static String debugTag = "missedcall2";
+
+    public static String wifiApnString = "RobotCompleteRobot50";
 
     public static String[] phoneTrack = new String[3];
     public static AudioManager am;
+    public static WifiManager wifiMgr;
     public static android.content.Context appContext = null;
 
     Button btnStartService, btnStopService;
     Button cb_0, cb_1, cb_2;
     EditText[] ph = new EditText[3];
 
+    public WifiReceiver w;
+
     public static boolean isServiceStarted = false;
 
-    /*private ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
-                    Log.i(MainActivity.debugTag, "Permission is granted");
-                } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // features requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
-                    Log.i(MainActivity.debugTag, "Permission not granted");
-                }
-            });*/
-    private boolean checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
+    private void requestPermissions(String permission){
+        if (ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_CALL_LOG},
+                    new String[]{permission},
                     200);
-            return false;
         }
-        return true;
     }
+
+    private void checkPermission() {
+        requestPermissions(Manifest.permission.READ_CALL_LOG);
+        requestPermissions(Manifest.permission.ACCESS_NETWORK_STATE);
+        requestPermissions(Manifest.permission.ACCESS_WIFI_STATE);
+        requestPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
+        requestPermissions(Manifest.permission.ACCESS_COARSE_LOCATION);
+        requestPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,25 +73,13 @@ public class MainActivity extends AppCompatActivity {
         appContext = this;
 
         checkPermission();
+        wifiMgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 
-        /*
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.READ_CALL_LOG) ==
-                PackageManager.PERMISSION_DENIED) {
-            // You can use the API that requires the permission.
-            requestPermissionLauncher.launch(
-                    Manifest.permission.READ_CALL_LOG);
+        try{
+            w = new WifiReceiver();
+        } catch (Exception e){
+            Log.i(MainActivity.debugTag, "Exception: " + e.getMessage());
         }
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_DENIED) {
-            // You can use the API that requires the permission.
-            requestPermissionLauncher.launch(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }*/
-
-        //final File externalFilesDir = this.getExternalFilesDir(null);
-        //filewriter.writeFileExternalStorage(externalFilesDir);
 
         btnStartService = findViewById(R.id.buttonStartService);
         btnStopService = findViewById(R.id.buttonStopService);
@@ -137,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     public void startService() {
+        w.enable(appContext);
         if(!MainActivity.isServiceStarted) {
             try {
                 boolean isAnyPhoneEntered = false;
@@ -179,4 +172,5 @@ public class MainActivity extends AppCompatActivity {
         MissedCallsContentObserver mcco = new MissedCallsContentObserver(getApplicationContext().getContentResolver());
         getApplicationContext().getContentResolver().unregisterContentObserver(mcco);
         Log.i(MainActivity.debugTag, "Foreground service stopped");
+        w.disable(appContext);
     }}
