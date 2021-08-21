@@ -53,8 +53,14 @@ public class WifiReceiver extends ConnectivityManager.NetworkCallback {
         Log.i(MainActivity.debugTag, " -- Wifi connected --- " + " SSID " + ssid );
         ssid = ssid.replaceAll("^\"|\"$", "");
         if (ssid.equals(wifiApnString)) {
-            Log.i(MainActivity.debugTag, "Ringer mode NORMAL");
-            MainActivity.am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            if(MainActivity.isServiceStarted) {
+                Log.i(MainActivity.debugTag, "Ringer mode NORMAL");
+                MainActivity.am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                MainActivity.am.setStreamVolume(AudioManager.STREAM_RING, MainActivity.am.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+                playNotification.run(MainActivity.appContext);
+            } else {
+                Log.i(MainActivity.debugTag, "As service is not started, we just exit");
+            }
         }
     }
 }

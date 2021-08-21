@@ -210,14 +210,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     public void startService() {
+        boolean enableForegroundForWifi = false;
+        boolean enableForegroundForPhone = false;
+        String monitoredPhones = "";
         if(isWifiMonitoringEnabled && !isWifiMonitoringStarted) {
             isWifiMonitoringStarted = true;
             w.enable(appContext);
+            enableForegroundForWifi = true;
         }
         if(!MainActivity.isServiceStarted) {
             try {
                 boolean isAnyPhoneEntered = false;
-                String monitoredPhones = "";
+
                 for (int i = 0; i < ph.length; i++) {
                     if (phoneTrack[i] == null) {
                         phoneTrack[i] = ph[i].getText().toString();
@@ -227,32 +231,35 @@ public class MainActivity extends AppCompatActivity {
                         isAnyPhoneEntered = true;
                     }
                 }
-                if (!isAnyPhoneEntered) {
-                    Toast.makeText(MainActivity.appContext, "No phones to monitor, not starting the service", Toast.LENGTH_SHORT).show();
-                    Log.i(MainActivity.debugTag, "Foreground service NOT started");
-                    return;
-                } else {
-                    Log.i(MainActivity.debugTag, "Phones to scan: " + monitoredPhones);
-                    Intent serviceIntent = new Intent(this, ForegroundService.class);
-                    //serviceIntent.putExtra("inputExtra", "Monitored phones: " + monitoredPhones);
-                    String notificationString = "Ph: " + monitoredPhones;
-                    if (isWifiMonitoringEnabled) {
-                        notificationString += " WiFi: " + wifiApnString;
-                    }
-                    serviceIntent.putExtra("inputExtra", notificationString);
-                    ContextCompat.startForegroundService(this, serviceIntent);
-                    MissedCallsContentObserver mcco = new MissedCallsContentObserver(getApplicationContext().getContentResolver());
-                    getApplicationContext().getContentResolver().registerContentObserver(CallLog.Calls.CONTENT_URI, true, mcco);
+                if (isAnyPhoneEntered) {
+                    enableForegroundForPhone = true;
                 }
             } catch (Exception e) {
                 Log.d("MissedCall2", "Exception: " + e.getMessage());
             }
-            Log.i(MainActivity.debugTag, "Foreground service started");
-            MainActivity.isServiceStarted = true;
         } else {
             Toast.makeText(MainActivity.appContext, "Service already started...", Toast.LENGTH_SHORT).show();
             Log.i(MainActivity.debugTag, "Service already started...");
         }
+        if (enableForegroundForPhone || enableForegroundForWifi) {
+            MainActivity.isServiceStarted = true;
+            Log.i(MainActivity.debugTag, "Phones to scan: " + monitoredPhones);
+            Intent serviceIntent = new Intent(this, ForegroundService.class);
+            //serviceIntent.putExtra("inputExtra", "Monitored phones: " + monitoredPhones);
+            String notificationString = "";
+            if (enableForegroundForPhone) {
+                notificationString += "Ph: " + monitoredPhones;
+            }
+            if (isWifiMonitoringEnabled) {
+                notificationString += " WiFi: " + wifiApnString;
+            }
+            serviceIntent.putExtra("inputExtra", notificationString);
+            ContextCompat.startForegroundService(this, serviceIntent);
+            MissedCallsContentObserver mcco = new MissedCallsContentObserver(getApplicationContext().getContentResolver());
+            getApplicationContext().getContentResolver().registerContentObserver(CallLog.Calls.CONTENT_URI, true, mcco);
+            Log.i(MainActivity.debugTag, "Foreground service started");
+        }
+
     }
     public void stopService() {
         if(MainActivity.isServiceStarted) {
