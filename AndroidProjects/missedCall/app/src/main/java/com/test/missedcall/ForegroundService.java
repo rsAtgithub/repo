@@ -30,7 +30,9 @@ public class ForegroundService extends Service {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 /*.setContentTitle("Missed call checker by RVS")*/
                 .setContentText(input)
-                .setSmallIcon(R.drawable.ic_schedule)
+                /*.setSmallIcon(R.drawable.ic_schedule)*/
+                /*.setSmallIcon(R.drawable.ic_baseline_functions_24)*/
+                .setSmallIcon(R.drawable.ic_baseline_agriculture_24)
                 .setColor(Color.rgb(255, 255, 31))
                 .setContentIntent(pendingIntent)
                 .setNotificationSilent()

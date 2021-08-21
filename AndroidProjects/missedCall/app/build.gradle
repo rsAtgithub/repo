@@ -4,6 +4,34 @@ plugins {
 }
 
 android {
+    def getVersionCode = { ->
+        try {
+            def code = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'tag', '--list'
+                standardOutput = code
+            }
+            return code.toString().split("\n").size()
+        }
+        catch (ignored) {
+            return -1;
+        }
+    }
+
+    def getVersionName = { ->
+        def stdout = new ByteArrayOutputStream()
+        try {
+            exec {
+                commandLine 'git', 'log -1 --pretty=%h--%ad"'
+                standardOutput = stdout
+            }
+            return stdout.toString().trim()
+        }
+        catch (ignored) {
+            return "here " + stdout.toString().trim();
+        }
+    }
+
     compileSdk 31
 
     defaultConfig {
@@ -11,8 +39,7 @@ android {
         minSdk 28
         targetSdk 31
         versionCode 1
-        versionName "1.0"
-
+        versionName "beta-2-wifi"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,3 +69,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
+
+
