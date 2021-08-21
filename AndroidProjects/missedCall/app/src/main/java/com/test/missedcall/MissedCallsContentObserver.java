@@ -6,11 +6,18 @@ import android.media.AudioManager;
 import android.provider.CallLog;
 import android.util.Log;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class MissedCallsContentObserver extends ContentObserver{
+
+    Calendar calendar=new GregorianCalendar();
+    int missedCallCount = 0;
+    TimerTask waitingTime;
 
     private  android.content.ContentResolver cr;
     public MissedCallsContentObserver(android.content.ContentResolver contResolver)
@@ -54,17 +61,48 @@ public class MissedCallsContentObserver extends ContentObserver{
                 if(!MainActivity.phoneTrack[i].equals("")) {
                     if (phNumber.contains(MainActivity.phoneTrack[i])) {
                         Log.i(MainActivity.debugTag, "Entry: " + i + " is found in " + phNumber);
-                        Log.i(MainActivity.debugTag, "Setting Ringer mode NORMAL");
-                        MainActivity.am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                        TimerTask timerExipireEvent = new TimerTask() {
-                            @Override
-                            public void run() {
-                                MainActivity.am.setRingerMode(oldRingerMode);
-                                Log.i(MainActivity.debugTag,"Reverting old ringer mode");
+                        if (missedCallCount == 0) {
+                            calendar.setTime(callDayTime);
+                            ForegroundService.updateNotification("1st call from:" + phNumber);
+                            missedCallCount = 1;
+                            waitingTime = new TimerTask() {
+                                @Override
+                                public void run() {
+                                    // After 1st call, we waited for MainActivity.timeLimit, but did not receive
+                                    // second call. So, reset our loop;
+                                    ForegroundService.updateNotification(null);
+                                    missedCallCount = 0;
+                                }
+                            };
+                            new Timer().schedule(waitingTime, TimeUnit.MINUTES.toMillis(MainActivity.timeLimit));
+                        } else if (missedCallCount == 1) {
+                            Calendar timeNow = new GregorianCalendar();
+                            Calendar limit = calendar;
+                            limit.add(GregorianCalendar.MINUTE, MainActivity.timeLimit);
+                            if (timeNow.before(limit)){
+                                missedCallCount++;
+                            } else {
+                                missedCallCount = 0;
                             }
-                        };
-                        Log.i(MainActivity.debugTag, "Timer started for: " + MainActivity.timeToRevert + " ms");
-                        new Timer().schedule(timerExipireEvent, MainActivity.timeToRevert);
+                        }
+                        //missedCallCount++;
+                        if (missedCallCount >= 2) {
+                            waitingTime.cancel();
+                            ForegroundService.updateNotification("2nd call from:" + phNumber);
+                            Log.i(MainActivity.debugTag, "Setting Ringer mode NORMAL");
+                            MainActivity.am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                            TimerTask timerExipireEvent = new TimerTask() {
+                                @Override
+                                public void run() {
+                                    MainActivity.am.setRingerMode(oldRingerMode);
+                                    Log.i(MainActivity.debugTag, "Reverting old ringer mode");
+                                    missedCallCount = 0;
+                                    ForegroundService.updateNotification(null);
+                                }
+                            };
+                            Log.i(MainActivity.debugTag, "Timer started for: " + MainActivity.timeToRevert + " ms");
+                            new Timer().schedule(timerExipireEvent, MainActivity.timeToRevert);
+                        }
                         modeChanged = true;
                         break;
                     }

@@ -39,7 +39,7 @@ android {
         minSdk 28
         targetSdk 31
         versionCode 1
-        versionName "beta-3-wifi"
+        versionName "beta-4a"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

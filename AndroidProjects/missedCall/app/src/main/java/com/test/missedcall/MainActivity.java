@@ -38,6 +38,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static int timeToRevert = 30000;
+    public static int timeLimit = 1;    //minute
     public static String debugTag = "missedcall2";
 
     //public static String wifiApnString = "RobotCompleteRobot50";
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         wifiMonitoring = findViewById(R.id.wifiMonitor);
+        wifiMonitoring.setChecked(isWifiMonitoringEnabled);
         wifiMonitoring.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,9 +189,6 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < items.length; i++) {
             items[i] = new MyData(ssidList.get(i), "value1");
         }
-        /*items[0] = new MyData("key1", "value1");
-        items[1] = new MyData("key2", "value2");
-        items[2] = new MyData("key3", "value3");*/
         ArrayAdapter<MyData> adapter = new ArrayAdapter<MyData>(this,
                 android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
