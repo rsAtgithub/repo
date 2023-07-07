@@ -9,6 +9,14 @@ import android.location.LocationManager;
 import android.location.LocationRequest;
 import android.os.Build;
 import android.os.Bundle;
+
+import com.azure.core.credential.AzureKeyCredential;
+import com.azure.core.util.CoreUtils;
+import com.azure.messaging.webpubsub.WebPubSubAuthenticationPolicy;
+import com.azure.messaging.webpubsub.WebPubSubServiceClient;
+import com.azure.messaging.webpubsub.WebPubSubServiceClientBuilder;
+import com.azure.messaging.webpubsub.models.GetClientAccessTokenOptions;
+import com.azure.messaging.webpubsub.models.WebPubSubClientAccessToken;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
@@ -25,6 +33,13 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.phonelocation_1.databinding.ActivityMainBinding;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +52,11 @@ import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -92,12 +111,20 @@ public class MainActivity extends AppCompatActivity implements android.location.
         }
         Log.d("RVS_001", gpsCheck);
 
+        String connectionString;
+        try {
+            connectionString = trial();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
         t = binding.getRoot().findViewById(R.id.textview_first);
         checkPermissions(binding.getRoot().getContext());
         startLocationRequest(binding.getRoot().getContext());
 
+
         try {
-            sec = new SecWebSocketProtocolClientExample();
+            sec = new SecWebSocketProtocolClientExample(connectionString);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -110,6 +137,62 @@ public class MainActivity extends AppCompatActivity implements android.location.
             }
         }, 0, updateTimeInMilliSeconds);
 
+    }
+
+    String trial() throws URISyntaxException {
+//        WebPubSubServiceClient service = new WebPubSubServiceClientBuilder()
+//                .connectionString("Endpoint=https://loc-1-watch4.webpubsub.azure.com;AccessKey=9K6Xs8ofNWvnw9MiE4JKzKJnb9Niec73OcQlMn51OHk=;Version=1.0;")
+//                .hub("Hub")
+//                .buildClient();
+//
+//        GetClientAccessTokenOptions option = new GetClientAccessTokenOptions();
+//        option.addGroup("Group1");
+//        //option.addRole("")
+//        option.setUserId("auto_1");
+//        option.setExpiresAfter(Duration.ofDays(1));
+//        WebPubSubClientAccessToken token = service.getClientAccessToken(option);
+//        Log.d("WebSocket3", token.getUrl());
+        GetClientAccessTokenOptions option = new GetClientAccessTokenOptions();
+        String[] roles = {"webpubsub.joinLeaveGroup", "webpubsub.sendToGroup"};
+        option.setExpiresAfter(Duration.ofDays(2));
+        option.addRole(roles[0]);
+        option.addRole(roles[1]);
+        option.setUserId("phoneLoc_1");
+        String baseUrl = "https://loc-1-watch4.webpubsub.azure.com/client/hubs/Hub";
+        String key = getString(R.string.pubsub_secondary_key);
+        AzureKeyCredential ak = new AzureKeyCredential(key);
+        String authToken = getAuthenticationToken(baseUrl, option, ak);
+        String webSocketUrl = "wss://loc-1-watch4.webpubsub.azure.com/client/hubs/Hub?access_token=" + authToken;
+        Log.d("WebSocket3", webSocketUrl);
+        return webSocketUrl;
+    }
+
+    String getAuthenticationToken(String audienceUrl, GetClientAccessTokenOptions options, AzureKeyCredential credential) {
+        try {
+            Duration expiresAfter = Duration.ofHours(1L);
+            JWTClaimsSet.Builder claimsBuilder = (new JWTClaimsSet.Builder()).audience(audienceUrl);
+            if (options != null) {
+                expiresAfter = options.getExpiresAfter() == null ? expiresAfter : options.getExpiresAfter();
+                String userId = options.getUserId();
+                if (!CoreUtils.isNullOrEmpty(options.getRoles())) {
+                    claimsBuilder.claim("role", options.getRoles());
+                }
+
+                if (!CoreUtils.isNullOrEmpty(userId)) {
+                    claimsBuilder.subject(userId);
+                }
+            }
+
+            claimsBuilder.expirationTime(Date.from(LocalDateTime.now().plus(expiresAfter).atZone(ZoneId.systemDefault()).toInstant()));
+            JWTClaimsSet claims = claimsBuilder.build();
+            JWSSigner signer = new MACSigner(credential.getKey().getBytes(StandardCharsets.UTF_8));
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claims);
+            signedJWT.sign(signer);
+            return signedJWT.serialize();
+        } catch (JOSEException var8) {
+            //LOGGER.logThrowableAsError(var8);
+            return null;
+        }
     }
 
     @Override

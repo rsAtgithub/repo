@@ -41,8 +41,8 @@ public class SecWebSocketProtocolClientExample {
 
     ExampleClient c;
 
-    public SecWebSocketProtocolClientExample() throws URISyntaxException {
-        String u = "wss://loc-1-watch4.webpubsub.azure.com/client/hubs/Hub?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ3c3M6Ly9sb2MtMS13YXRjaDQud2VicHVic3ViLmF6dXJlLmNvbS9jbGllbnQvaHVicy9IdWIiLCJpYXQiOjE2ODg2NDY0NzUsImV4cCI6MTY4ODY4MjQ3NSwicm9sZSI6WyJ3ZWJwdWJzdWIuc2VuZFRvR3JvdXAiLCJ3ZWJwdWJzdWIuam9pbkxlYXZlR3JvdXAiXSwic3ViIjoicGhfMSJ9.df11oQDLVTShvyBtgNu3A8e0cc8n5lxp5Cd_cO2-DuU";
+    public SecWebSocketProtocolClientExample(String connectionString) throws URISyntaxException {
+        //String u = "wss://loc-1-watch4.webpubsub.azure.com/client/hubs/Hub?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ3c3M6Ly9sb2MtMS13YXRjaDQud2VicHVic3ViLmF6dXJlLmNvbS9jbGllbnQvaHVicy9IdWIiLCJpYXQiOjE2ODg2NDY0NzUsImV4cCI6MTY4ODY4MjQ3NSwicm9sZSI6WyJ3ZWJwdWJzdWIuc2VuZFRvR3JvdXAiLCJ3ZWJwdWJzdWIuam9pbkxlYXZlR3JvdXAiXSwic3ViIjoicGhfMSJ9.df11oQDLVTShvyBtgNu3A8e0cc8n5lxp5Cd_cO2-DuU";
         String proto = "json.webpubsub.azure.v1";
         // This draft only allows you to use the specific Sec-WebSocket-Protocol without a fallback.
         Draft_6455 draft_ocppOnly = new Draft_6455(Collections.<IExtension>emptyList(),
@@ -55,7 +55,7 @@ public class SecWebSocketProtocolClientExample {
         Draft_6455 draft_ocppAndFallBack = new Draft_6455(Collections.<IExtension>emptyList(),
                 protocols);
 
-        c = new ExampleClient(new URI(u), draft_ocppAndFallBack);
+        c = new ExampleClient(new URI(connectionString), draft_ocppAndFallBack);
         c.connect();
     }
 
