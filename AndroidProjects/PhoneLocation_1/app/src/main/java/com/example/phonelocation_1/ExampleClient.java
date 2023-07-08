@@ -98,4 +98,8 @@ public class ExampleClient extends WebSocketClient {
             send(j12);
         }
     }
+
+    public boolean isConnectionEstablished(){
+        return connectionEstablished;
+    }
 }

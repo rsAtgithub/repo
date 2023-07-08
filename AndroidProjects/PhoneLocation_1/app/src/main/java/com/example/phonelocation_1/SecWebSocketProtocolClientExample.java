@@ -62,4 +62,8 @@ public class SecWebSocketProtocolClientExample {
     public void sendText(String msg) {
         c.sendText(msg);
     }
+
+    public boolean isConnectionEstablished() {
+        return c.isConnectionEstablished();
+    }
 }

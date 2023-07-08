@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements android.location.
 
     private TextView t;
 
-    private int updateTimeInMilliSeconds = 30000;
+    public static final int updateTimeInMilliSeconds = 30000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,89 +111,38 @@ public class MainActivity extends AppCompatActivity implements android.location.
         }
         Log.d("RVS_001", gpsCheck);
 
-        String connectionString;
-        try {
-            connectionString = trial();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        t = binding.getRoot().findViewById(R.id.textview_first);
-        checkPermissions(binding.getRoot().getContext());
-        startLocationRequest(binding.getRoot().getContext());
-
-
-        try {
-            sec = new SecWebSocketProtocolClientExample(connectionString);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        myTimer = new Timer();
-        myTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                TimerMethod();
-            }
-        }, 0, updateTimeInMilliSeconds);
-
-    }
-
-    String trial() throws URISyntaxException {
-//        WebPubSubServiceClient service = new WebPubSubServiceClientBuilder()
-//                .connectionString("Endpoint=https://loc-1-watch4.webpubsub.azure.com;AccessKey=9K6Xs8ofNWvnw9MiE4JKzKJnb9Niec73OcQlMn51OHk=;Version=1.0;")
-//                .hub("Hub")
-//                .buildClient();
+//        String connectionString;
+//        try {
+//            WebSocketUrlGeneration ws = new WebSocketUrlGeneration("Phone_1", getString(R.string.pubsub_secondary_key));
+//            connectionString = ws.run();
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
 //
-//        GetClientAccessTokenOptions option = new GetClientAccessTokenOptions();
-//        option.addGroup("Group1");
-//        //option.addRole("")
-//        option.setUserId("auto_1");
-//        option.setExpiresAfter(Duration.ofDays(1));
-//        WebPubSubClientAccessToken token = service.getClientAccessToken(option);
-//        Log.d("WebSocket3", token.getUrl());
-        GetClientAccessTokenOptions option = new GetClientAccessTokenOptions();
-        String[] roles = {"webpubsub.joinLeaveGroup", "webpubsub.sendToGroup"};
-        option.setExpiresAfter(Duration.ofDays(2));
-        option.addRole(roles[0]);
-        option.addRole(roles[1]);
-        option.setUserId("phoneLoc_1");
-        String baseUrl = "https://loc-1-watch4.webpubsub.azure.com/client/hubs/Hub";
-        String key = getString(R.string.pubsub_secondary_key);
-        AzureKeyCredential ak = new AzureKeyCredential(key);
-        String authToken = getAuthenticationToken(baseUrl, option, ak);
-        String webSocketUrl = "wss://loc-1-watch4.webpubsub.azure.com/client/hubs/Hub?access_token=" + authToken;
-        Log.d("WebSocket3", webSocketUrl);
-        return webSocketUrl;
+//        t = binding.getRoot().findViewById(R.id.textview_first);
+//        checkPermissions(binding.getRoot().getContext());
+//        startLocationRequest(binding.getRoot().getContext());
+
+
+//        try {
+//            sec = new SecWebSocketProtocolClientExample(connectionString);
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        myTimer = new Timer();
+//        myTimer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                TimerMethod();
+//            }
+//        }, 0, updateTimeInMilliSeconds);
+
     }
 
-    String getAuthenticationToken(String audienceUrl, GetClientAccessTokenOptions options, AzureKeyCredential credential) {
-        try {
-            Duration expiresAfter = Duration.ofHours(1L);
-            JWTClaimsSet.Builder claimsBuilder = (new JWTClaimsSet.Builder()).audience(audienceUrl);
-            if (options != null) {
-                expiresAfter = options.getExpiresAfter() == null ? expiresAfter : options.getExpiresAfter();
-                String userId = options.getUserId();
-                if (!CoreUtils.isNullOrEmpty(options.getRoles())) {
-                    claimsBuilder.claim("role", options.getRoles());
-                }
 
-                if (!CoreUtils.isNullOrEmpty(userId)) {
-                    claimsBuilder.subject(userId);
-                }
-            }
 
-            claimsBuilder.expirationTime(Date.from(LocalDateTime.now().plus(expiresAfter).atZone(ZoneId.systemDefault()).toInstant()));
-            JWTClaimsSet claims = claimsBuilder.build();
-            JWSSigner signer = new MACSigner(credential.getKey().getBytes(StandardCharsets.UTF_8));
-            SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claims);
-            signedJWT.sign(signer);
-            return signedJWT.serialize();
-        } catch (JOSEException var8) {
-            //LOGGER.logThrowableAsError(var8);
-            return null;
-        }
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

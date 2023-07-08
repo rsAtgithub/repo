@@ -53,4 +53,5 @@ dependencies {
     implementation 'com.azure:azure-messaging-webpubsub:1.2.5'
     implementation 'org.slf4j:slf4j-api:1.7.5'
     implementation 'org.slf4j:slf4j-simple:1.6.4'
+    implementation "androidx.work:work-runtime:2.7.0"
 }
