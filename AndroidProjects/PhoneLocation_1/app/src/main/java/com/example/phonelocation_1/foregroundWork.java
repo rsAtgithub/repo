@@ -1,5 +1,6 @@
 package com.example.phonelocation_1;
 
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,6 +17,8 @@ public class foregroundWork extends Service {
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
 
     private static  boolean IS_ACTIVITY_RUNNING = false;
+
+    private myActivity task;
 
     @Override
     public void onCreate() {
@@ -43,11 +46,16 @@ public class foregroundWork extends Service {
         //do heavy work on a background thread
         //stopSelf();
 
-        return START_NOT_STICKY;
+        task = new myActivity(getApplicationContext());
+
+        return START_STICKY;
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        task.disconnect();
+
         IS_ACTIVITY_RUNNING = false;
     }
 

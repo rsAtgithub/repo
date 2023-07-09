@@ -66,4 +66,8 @@ public class SecWebSocketProtocolClientExample {
     public boolean isConnectionEstablished() {
         return c.isConnectionEstablished();
     }
+
+    public void disconnect() {
+        c.disconnect();
+    }
 }

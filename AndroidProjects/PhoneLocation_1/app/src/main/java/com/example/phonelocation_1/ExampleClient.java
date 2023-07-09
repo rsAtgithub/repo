@@ -102,4 +102,13 @@ public class ExampleClient extends WebSocketClient {
     public boolean isConnectionEstablished(){
         return connectionEstablished;
     }
+
+    public void disconnect() {
+        if (connectionEstablished) {
+            close(3333, "Terminated by user");
+            Log.d("RVS_001", "disconnect");
+        } else {
+            Log.d("RVS_001", "already disconnected");
+        }
+    }
 }

@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".foregroundWork" android:enabled="true" android:foregroundServiceType="location" />
+        <service android:name=".foregroundWork" android:stopWithTask="false" android:enabled="true" android:foregroundServiceType="location" />
     </application>
 
 </manifest>
