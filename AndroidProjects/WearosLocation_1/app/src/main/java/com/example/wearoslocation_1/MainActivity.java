@@ -86,18 +86,43 @@ public class MainActivity extends Activity implements android.location.LocationL
         checkPermissions(binding.getRoot().getContext());
         startLocationRequest(binding.getRoot().getContext());
 
-        myTimer = new Timer();
-        myTimer.schedule(new TimerTask() {
+        binding.buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                TimerMethod();
+            public void onClick(View v) {
+                startService(binding.getRoot().getContext());
             }
-        }, 0, 15000);
+        });
+
+        binding.buttonStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopService(binding.getRoot().getContext());
+            }
+        });
+
+//        myTimer = new Timer();
+//        myTimer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                TimerMethod();
+//            }
+//        }, 0, 15000);
 
         //final Intent shareIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mainto:"));
         //email();
         //azureWebPubSub();
-        connectWebSocket();
+        //connectWebSocket();
+    }
+
+    public void startService(Context context) {
+        Intent serviceIntent = new Intent(context, foregroundWork.class);
+        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+        //ContextCompat.startForegroundService(context, serviceIntent);
+        context.startForegroundService(serviceIntent);
+    }
+    public void stopService(Context context) {
+        Intent serviceIntent = new Intent(context, foregroundWork.class);
+        context.stopService(serviceIntent);
     }
 
     private void connectWebSocket() {

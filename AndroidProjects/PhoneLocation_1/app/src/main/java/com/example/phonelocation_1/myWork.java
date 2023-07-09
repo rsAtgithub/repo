@@ -43,7 +43,7 @@ public class myWork extends Worker {
 
     public myWork(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        if (thisContext == null) {
+        if (thisContext != null) {
             thisContext = context;
 
             try {
