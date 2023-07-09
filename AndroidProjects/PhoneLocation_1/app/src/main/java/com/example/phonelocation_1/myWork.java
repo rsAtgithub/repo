@@ -152,21 +152,15 @@ public class myWork extends Worker {
         return Result.success();
     }
 
-//    private Runnable Timer_Tick = new Runnable() {
-//        @Override
-//        public void run() {
-//            noOfReads++;
-//            Log.d("RVS_001", "Timer Event");
-//            locationReader();
-//        }
-//    };
-
     private void TimerMethod() {
         if (sec.isConnectionEstablished()) {
             noOfReads++;
             Log.d("RVS_001", "Timer Event");
             locationReader();
         } else {
+            Log.d("RVS_001", "Timer Event, but no active connection");
+        }
+        /*else {
             try {
                 Log.d("RVS_001", "New Connection");
                 sec = new SecWebSocketProtocolClientExample(connectionString);
@@ -174,6 +168,6 @@ public class myWork extends Worker {
                 Log.d("RVS_001", "Exception: " + e.getMessage());
                 throw new RuntimeException(e);
             }
-        }
+        }*/
     }
 }

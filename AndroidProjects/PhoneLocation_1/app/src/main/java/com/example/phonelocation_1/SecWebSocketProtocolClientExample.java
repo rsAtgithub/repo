@@ -55,7 +55,7 @@ public class SecWebSocketProtocolClientExample {
         Draft_6455 draft_ocppAndFallBack = new Draft_6455(Collections.<IExtension>emptyList(),
                 protocols);
 
-        c = new ExampleClient(new URI(connectionString), draft_ocppAndFallBack);
+        c = new ExampleClient(new URI(connectionString), draft_ocppOnly);
         c.connect();
     }
 
