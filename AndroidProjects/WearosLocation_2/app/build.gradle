@@ -12,6 +12,14 @@ android {
         versionCode 1
         versionName "1.0"
 
+        Properties properties = new Properties()
+        if (rootProject.file("local.properties").exists()) {
+            properties.load(rootProject.file("local.properties").newDataInputStream())
+        }
+
+        buildConfigField "String", "esamparkaPassword", "\"" + properties.getProperty('esamparkaPassword') + "\""
+
+        //resValue "string", "", properties.getProperty("esamparkaPassword", "")
     }
 
     buildTypes {
