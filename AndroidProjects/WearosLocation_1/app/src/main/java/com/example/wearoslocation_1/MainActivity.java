@@ -114,15 +114,22 @@ public class MainActivity extends Activity implements android.location.LocationL
         //connectWebSocket();
     }
 
+    private void sendEmail() {
+
+    }
+
     public void startService(Context context) {
-        Intent serviceIntent = new Intent(context, foregroundWork.class);
-        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
-        //ContextCompat.startForegroundService(context, serviceIntent);
-        context.startForegroundService(serviceIntent);
+
+
+
+//        Intent serviceIntent = new Intent(context, foregroundWork.class);
+//        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+//        //ContextCompat.startForegroundService(context, serviceIntent);
+//        context.startForegroundService(serviceIntent);
     }
     public void stopService(Context context) {
-        Intent serviceIntent = new Intent(context, foregroundWork.class);
-        context.stopService(serviceIntent);
+        //Intent serviceIntent = new Intent(context, foregroundWork.class);
+        //context.stopService(serviceIntent);
     }
 
     private void connectWebSocket() {

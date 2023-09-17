@@ -25,9 +25,9 @@ public class myActivity {
 
     private LocationManager locationManager;
 
-    private int noOfReads= 0;
+    public int noOfReads= 0;
 
-    private SecWebSocketProtocolClientExample sec;
+    public SecWebSocketProtocolClientExample sec;
 
     private Timer myTimer;
 
@@ -53,13 +53,13 @@ public class myActivity {
                 throw new RuntimeException(e);
             }
 
-            myTimer = new Timer();
-            myTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    TimerMethod();
-                }
-            }, 0, MainActivity.updateTimeInMilliSeconds);
+//            myTimer = new Timer();
+//            myTimer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    TimerMethod();
+//                }
+//            }, 0, MainActivity.updateTimeInMilliSeconds);
         } else {
             Log.d("RVS_001", "WTF");
         }
@@ -71,7 +71,7 @@ public class myActivity {
     }
 
     @SuppressLint("MissingPermission")
-    private void locationReader(){
+    public void locationReader(){
         // Or get last known location
         String source = null;
         String coordinates = null;

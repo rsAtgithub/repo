@@ -46,30 +46,36 @@ public class myWork extends Worker {
         if (thisContext != null) {
             thisContext = context;
 
-            try {
-                WebSocketUrlGeneration ws = new WebSocketUrlGeneration("Phone_1", context.getString(R.string.pubsub_secondary_key));
-                connectionString = ws.run();
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-            checkPermissions(context);
-            getLocationReaders(context);
-            try {
-                sec = new SecWebSocketProtocolClientExample(connectionString);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            //sendEmail();
 
-            myTimer = new Timer();
-            myTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    TimerMethod();
-                }
-            }, 0, MainActivity.updateTimeInMilliSeconds);
+            //WebSocketUsage(context);
         } else {
             Log.d("RVS_001", "WTF");
         }
+    }
+
+    private void WebSocketUsage(@NonNull Context context) {
+        try {
+            WebSocketUrlGeneration ws = new WebSocketUrlGeneration("Phone_1", context.getString(R.string.pubsub_secondary_key));
+            connectionString = ws.run();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        checkPermissions(context);
+        getLocationReaders(context);
+        try {
+            sec = new SecWebSocketProtocolClientExample(connectionString);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        myTimer = new Timer();
+        myTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                TimerMethod();
+            }
+        }, 0, MainActivity.updateTimeInMilliSeconds);
     }
 
     @SuppressLint("MissingPermission")
